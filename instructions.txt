@@ -2,7 +2,7 @@ Intall Heroku:
 brew tap heroku/brew && brew install heroku
 
 Login to Heroku:
-hero container:login
+heroku container:login
 
 Build the Docker Service: (In the directory with the Docker file)
 docker build -t task-service .
