@@ -61,9 +61,9 @@ def create_task():
 @app.route('/get-all-task/<user_id>')
 def get_all_task(user_id):
     query = '''
-        SELECT task_id, service_id, task_date_time, task_consumer, task_provider, task_status, task_price FROM task, users where users.user_id=%s
+        SELECT task_id, service_id, task_date_time, task_consumer, task_provider, task_status, task_price FROM task WHERE task.task_consumer=%s OR task.task_provider=%s
     '''
-    cursor.execute(query, [str(user_id)])
+    cursor.execute(query, [str(user_id), str(user_id)])
     res = cursor.fetchall()
     if (len(res) == 0):
         return {'status': 200, 'task': None}
@@ -87,7 +87,7 @@ def delete_task(task_id):
     conn.commit()
     return {'status': 200}
 
-@app.route('/change-task-status/<task_id>/<task_status>')
+@app.route('/change-task-status/<task_id>/<task_status>', methods=['POST'])
 def change_task_status(task_id, task_status):
     query = '''
         UPDATE task SET task_status=%s WHERE task.task_id=%s
