@@ -4,9 +4,11 @@ import os
 import psycopg2
 import uuid
 import json
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+# https://stackoverflow.com/a/64657739
+CORS(app, support_credentials=True)
 # https://devcenter.heroku.com/articles/heroku-postgresql#connecting-in-python
 
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -16,7 +18,6 @@ conn.autocommit = True
 
 cursor = conn.cursor()
 try:
-
     cursor.execute('''
         DROP TABLE IF EXISTS task;
     ''')
@@ -36,7 +37,7 @@ except psycopg2.Error:
 
 @app.route('/health-check')
 def health_check():
-    return {'status': 'OK', 'code': '200'}
+    return {'status': 200}
 
 @app.route('/create-task', methods=['POST'])
 def create_task():
@@ -54,6 +55,7 @@ def create_task():
         VALUES (%s, %s, %s, %s, %s, %s, %s)
     '''
     cursor.execute(query, [task_id, service_id, task_date_time, task_consumer, task_provider, task_status, task_price])
+    conn.commit()
     return {'status': 201, 'task_id': task_id}
 
 @app.route('/get-all-task/<user_id>')
@@ -82,15 +84,16 @@ def delete_task(task_id):
         DELETE FROM task WHERE task.task_id=%s
     '''
     cursor.execute(query, [str(task_id)])
+    conn.commit()
     return {'status': 200}
 
-@app.route('/change-task-status/<task_id>')
-def change_task_status(task_id):
+@app.route('/change-task-status/<task_id>/<task_status>')
+def change_task_status(task_id, task_status):
     query = '''
         UPDATE task SET task_status=%s WHERE task.task_id=%s
     '''
-    status = 'IN_PROGRESS'
-    cursor.execute(query, [str(status), str(task_id)])
+    cursor.execute(query, [str(task_status), str(task_id)])
+    conn.commit()
     return {'status': 200}
 
 # https://www.youtube.com/watch?v=4eQqcfQIWXw
