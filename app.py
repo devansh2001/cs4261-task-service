@@ -19,9 +19,6 @@ conn.autocommit = True
 cursor = conn.cursor()
 try:
     cursor.execute('''
-        DROP TABLE IF EXISTS task;
-    ''')
-    cursor.execute('''
     CREATE TABLE IF NOT EXISTS task (
         task_id varchar(64) PRIMARY KEY,
         service_id varchar(64),
@@ -80,7 +77,6 @@ def get_all_task(user_id):
             'task_price': res[i][6]
         }
         task_list.append(task)
-        task.clear()
     return {'status': 200, 'task': task_list}
 
 @app.route('/delete-task/<task_id>', methods=['DELETE'])
