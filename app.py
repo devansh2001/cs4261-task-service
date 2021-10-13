@@ -4,6 +4,7 @@ import os
 import psycopg2
 import uuid
 import json
+import copy
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -76,7 +77,8 @@ def get_all_task(user_id):
             'task_status': res[i][5],
             'task_price': res[i][6]
         }
-        task_list.append(task)
+        task_list.append(copy.deepcopy(task))
+        task.clear()
     return {'status': 200, 'task': task_list}
 
 @app.route('/delete-task/<task_id>', methods=['DELETE'])
