@@ -84,7 +84,8 @@ def get_all_task(user_id):
 @app.route('/get-tasks-by-status/<user_id>/<task_status>')
 def get_tasks_by_status(user_id, task_status):
     query = '''
-        SELECT task_id, service_id, task_date_time, task_consumer, task_provider, task_status, task_price FROM task WHERE task.task_consumer=%s AND task.task_status=%s
+        SELECT task_id, task.service_id, task_date_time, task_consumer, task_provider, task_status, task_price, service_name FROM task
+        INNER JOIN services ON task.service_id=services.service_id WHERE task.task_consumer=%s AND task.task_status=%s
     '''
     cursor.execute(query, [str(user_id), str(task_status)])
     res = cursor.fetchall()
@@ -100,7 +101,8 @@ def get_tasks_by_status(user_id, task_status):
             'task_consumer': res[i][3],
             'task_provider': res[i][4],
             'task_status': res[i][5],
-            'task_price': res[i][6]
+            'task_price': res[i][6],
+            'service_name': res[i][7]
         }
         task_list.append(copy.deepcopy(task))
         task.clear()
