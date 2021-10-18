@@ -81,6 +81,31 @@ def get_all_task(user_id):
         task.clear()
     return {'status': 200, 'task': task_list}
 
+@app.route('/get-tasks-by-status/<user_id>/<task_status>')
+def get_tasks_by_status(user_id, task_status):
+    query = '''
+        SELECT task_id, service_id, task_date_time, task_consumer, task_provider, task_status, task_price FROM task WHERE task.task_consumer=%s AND task.task_status=%s
+    '''
+    cursor.execute(query, [str(user_id), str(task_status)])
+    res = cursor.fetchall()
+    if (len(res) == 0):
+        return {'status': 200, 'task': None}
+    task_list = list()
+    task = dict()
+    for i in range(len(res)):
+        task = {
+            'task_id': res[i][0],
+            'service_id': res[i][1],
+            'task_date_time': res[i][2],
+            'task_consumer': res[i][3],
+            'task_provider': res[i][4],
+            'task_status': res[i][5],
+            'task_price': res[i][6]
+        }
+        task_list.append(copy.deepcopy(task))
+        task.clear()
+    return {'status': 200, 'task': task_list}
+
 @app.route('/delete-task/<task_id>', methods=['DELETE'])
 def delete_task(task_id):
     query = '''
