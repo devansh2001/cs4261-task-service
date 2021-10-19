@@ -59,7 +59,8 @@ def create_task():
 @app.route('/get-all-task/<user_id>')
 def get_all_task(user_id):
     query = '''
-        SELECT task_id, service_id, task_date_time, task_consumer, task_provider, task_status, task_price FROM task WHERE task.task_consumer=%s OR task.task_provider=%s
+        SELECT task_id, task.service_id, task_date_time, task_consumer, task_provider, task_status, task_price, service_name FROM task
+        INNER JOIN services ON task.service_id=services.service_id WHERE task.task_consumer=%s OR task.task_provider=%s
     '''
     cursor.execute(query, [str(user_id), str(user_id)])
     res = cursor.fetchall()
@@ -75,7 +76,8 @@ def get_all_task(user_id):
             'task_consumer': res[i][3],
             'task_provider': res[i][4],
             'task_status': res[i][5],
-            'task_price': res[i][6]
+            'task_price': res[i][6],
+            'service_name': res[i][7]
         }
         task_list.append(copy.deepcopy(task))
         task.clear()
