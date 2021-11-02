@@ -88,6 +88,7 @@ def get_tasks_by_status(user_id, task_status):
     query = '''
         SELECT task_id, task.service_id, task_date_time, task_consumer, task_provider, task_status, task_price, service_name FROM task
         INNER JOIN services ON task.service_id=services.service_id WHERE task.task_consumer=%s AND task.task_status=%s
+        ORDER BY task_date_time ASC
     '''
     cursor.execute(query, [str(user_id), str(task_status)])
     res = cursor.fetchall()
