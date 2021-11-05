@@ -87,7 +87,7 @@ def get_all_task(user_id):
 def get_tasks_by_status(user_id, task_status):
     query = '''
         SELECT task_id, task.service_id, task_date_time, task_consumer, task_provider, task_status, task_price, service_name FROM task
-        INNER JOIN services ON task.service_id=services.service_id WHERE task.task_consumer=%s AND task.task_status=%s
+        INNER JOIN services ON task.service_id=services.service_id WHERE task.task_consumer=%s or task.task_provider=%s AND task.task_status=%s
         ORDER BY task_date_time ASC
     '''
     cursor.execute(query, [str(user_id), str(task_status)])
@@ -128,6 +128,16 @@ def change_task_status(task_id, task_status):
     cursor.execute(query, [str(task_status), str(task_id)])
     conn.commit()
     return {'status': 200}
+
+@app.route('/get-all-tasks')
+def get_all():
+    query = '''
+            Select * from task
+        '''
+    cursor.execute(query, [])
+    conn.commit()
+    return {'status': 200, "result": cursor.fetchall()}
+
 
 # https://www.youtube.com/watch?v=4eQqcfQIWXw
 if __name__ == '__main__':
