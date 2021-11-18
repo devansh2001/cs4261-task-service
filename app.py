@@ -6,6 +6,7 @@ import uuid
 import json
 import copy
 from flask_cors import CORS
+import requests
 
 app = Flask(__name__)
 # https://stackoverflow.com/a/64657739
@@ -33,6 +34,10 @@ try:
 except psycopg2.Error:
     print('Error occurred while creating table')
 
+def add_points(user, points):
+    # Creating API call in Python: https://realpython.com/python-requests/
+    requests.post('https://cs4261-users-service.herokuapp.com/add-points/' + user + '/' + points)
+
 @app.route('/health-check')
 def health_check():
     return {'status': 200}
@@ -54,6 +59,9 @@ def create_task():
     '''
     cursor.execute(query, [task_id, service_id, task_date_time, task_consumer, task_provider, task_status, task_price])
     conn.commit()
+
+    add_points(task_consumer, 100)
+    add_points(task_provider, 50)
     return {'status': 201, 'task_id': task_id}
 
 @app.route('/get-all-task/<user_id>')
