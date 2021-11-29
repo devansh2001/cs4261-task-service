@@ -36,7 +36,7 @@ except psycopg2.Error:
 
 def add_points(user, points):
     # Creating API call in Python: https://realpython.com/python-requests/
-    requests.post('https://cs4261-users-service.herokuapp.com/add-points/' + user + '/' + points)
+    requests.post('https://cs4261-users-service.herokuapp.com/add-points/' + user + '/' + str(points))
 
 @app.route('/health-check')
 def health_check():
